@@ -43,3 +43,23 @@ func TestUnpackInvalidString(t *testing.T) {
 		})
 	}
 }
+
+func TestUnpackString(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{input: "Крестики4,_4черточки,_палочки_в_UNICODE", expected: "КрестикиииичерточкпалочкUNICODE"},
+		{input: "Крестики4, 4черточки, палочки в UNICODE", expected: "КрестикиииичерточкпалочкUNICODE"},
+		{input: "Крестики/4,/4черточки,/палочки/в/UNICODE", expected: "КрестикчерточкпалочкUNICODE"},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.input, func(t *testing.T) {
+			result, err := Unpack(tc.input)
+			require.NoError(t, err)
+			require.Equal(t, tc.expected, result)
+		})
+	}
+}
