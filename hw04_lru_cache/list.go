@@ -36,7 +36,7 @@ func (l *list) Front() *ListItem {
 	return l.head
 }
 
-//Последний пункт списка.
+// Последний пункт списка.
 func (l *list) Back() *ListItem {
 	return l.tail
 }
