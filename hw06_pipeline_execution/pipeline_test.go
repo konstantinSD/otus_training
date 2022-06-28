@@ -14,7 +14,6 @@ const (
 )
 
 func TestPipeline(t *testing.T) {
-	// Stage generator
 	g := func(_ string, f func(v interface{}) interface{}) Stage {
 		return func(in In) Out {
 			out := make(Bi)
@@ -66,7 +65,6 @@ func TestPipeline(t *testing.T) {
 		done := make(Bi)
 		data := []int{1, 2, 3, 4, 5}
 
-		// Abort after 200ms
 		abortDur := sleepPerStage * 2
 		go func() {
 			<-time.After(abortDur)
@@ -89,5 +87,36 @@ func TestPipeline(t *testing.T) {
 
 		require.Len(t, result, 0)
 		require.Less(t, int64(elapsed), int64(abortDur)+int64(fault))
+	})
+
+	t.Run("no data case", func(t *testing.T) {
+		in := make(Bi)
+		close(in)
+		result := make([]interface{}, 0)
+		for s := range ExecutePipeline(in, nil, stages...) {
+			result = append(result, s)
+		}
+
+		require.Len(t, result, 0)
+		require.Equal(t, []interface{}{}, result)
+	})
+
+	t.Run("no stages case", func(t *testing.T) {
+		in := make(Bi)
+		data := []int{1, 2, 3, 4, 5}
+
+		go func() {
+			for _, v := range data {
+				in <- v
+			}
+			close(in)
+		}()
+		result := make([]int, 0)
+		for s := range ExecutePipeline(in, nil, []Stage{}...) {
+			result = append(result, s.(int))
+		}
+
+		require.Len(t, result, len(data))
+		require.Equal(t, data, result)
 	})
 }
