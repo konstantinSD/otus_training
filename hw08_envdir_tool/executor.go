@@ -1,4 +1,4 @@
-package hw08_envdir_tool
+package hw08envdirtool
 
 import (
 	"os"
