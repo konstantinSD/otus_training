@@ -1,4 +1,4 @@
-package main
+package hw08_envdir_tool
 
 import (
 	"log"
